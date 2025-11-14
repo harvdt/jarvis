@@ -24,6 +24,7 @@ services:
     networks:
       - hackaton-network
     env_file:
+      - .env
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_DB: ${POSTGRES_DB}

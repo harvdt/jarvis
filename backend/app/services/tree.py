@@ -13,6 +13,7 @@ def create_tree(db: Session, tree: TreeCreate):
         pollination_status=tree.pollination_status,
         latitude=tree.latitude,
         longitude=tree.longitude,
+        camera_id=tree.camera_id,
         plantation_id=tree.plantation_id
     )
     db.add(db_tree)
@@ -37,6 +38,7 @@ def update_tree(db: Session, tree_id: UUID, tree: TreeCreate):
         db_tree.pollination_status = tree.pollination_status
         db_tree.latitude = tree.latitude
         db_tree.longitude = tree.longitude
+        db_tree.camera_id = tree.camera_id
         db_tree.plantation_id = tree.plantation_id
         db.commit()
         db.refresh(db_tree)

@@ -7,5 +7,6 @@ from .log import *
 from .plantation import *
 from .tree import *
 from .user import *
+from .iot import *
 
 __all__ = ["Base"]

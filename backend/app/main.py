@@ -1,8 +1,27 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import health, iot, users, plantations, trees, logs, analytics, jarvis
+from app.services.mqtt import MQTTService
+from app.dependencies import get_db
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="Ericsson Hackaton 2025", version="1.0.0")
+mqtt_service = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    global mqtt_service
+    db = next(get_db())
+    mqtt_service = MQTTService(db)
+    mqtt_service.connect()
+
+    yield
+
+    # Shutdown
+    if mqtt_service:
+        mqtt_service.disconnect()
+
+app = FastAPI(title="Ericsson Hackaton 2025", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

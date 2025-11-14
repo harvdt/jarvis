@@ -9,6 +9,7 @@ class TreeBase(BaseModel):
     pollination_status: Optional[bool] = None
     latitude: float
     longitude: float
+    camera_id: Optional[int] = None
 
 
 class TreeCreate(BaseModel):
@@ -18,6 +19,7 @@ class TreeCreate(BaseModel):
     pollination_status: Optional[bool] = None
     latitude: float
     longitude: float
+    camera_id: Optional[int] = None
 
 
 class TreeRead(TreeBase):

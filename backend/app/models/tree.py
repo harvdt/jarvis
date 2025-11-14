@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, String, ForeignKey, Boolean, Float
+from sqlalchemy import Column, String, ForeignKey, Boolean, Float, Integer
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.utils.database import Base
@@ -14,5 +14,6 @@ class Tree(Base):
     pollination_status = Column(Boolean)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+    camera_id = Column(Integer, nullable=True, unique=True)  # Camera ID for IoT mapping
 
     plantation_id = Column(UUID(as_uuid=True), ForeignKey("plantation.id"), nullable=False)
