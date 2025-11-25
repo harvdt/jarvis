@@ -1,0 +1,70 @@
+services:
+  hackaton-frontend:
+    container_name: hackaton-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - hackaton-backend
+    networks:
+      - hackaton-network
+
+  hackaton-backend:
+    container_name: hackaton-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      hackaton-database:
+        condition: service_healthy
+    networks:
+      - hackaton-network
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_URL: ${DATABASE_URL}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./backend/app:/app/app # Mount app directory
+      - ./backend/alembic:/app/alembic # Mount alembic directory
+      - ./backend/scripts:/app/scripts # Mount scripts directory
+      - ./backend/pyproject.toml:/app/pyproject.toml # Mount config
+
+  hackaton-database:
+    container_name: hackaton-database
+    image: postgres:alpine
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - hackaton-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hackaton -d hackaton_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - hackaton-network
+
+networks:
+  hackaton-network:
+    driver: bridge
+
+volumes:
+  hackaton-postgres-data: {}
